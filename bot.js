@@ -45,10 +45,12 @@ app.get('/bayern', (req, res) => {
 });
 
 
-app.get('/', (req, res) => {
+app.get('/country', (req, res) => {
+    if(!req.query) return res.send('Please set a country with the \'country\' parameter!')
+    const country = req.query.country.toLowerCase();
     puppeteer.launch().then(async (browser) => {
         const page = await browser.newPage();
-        await page.goto('https://www.corona-in-zahlen.de/weltweit/deutschland/');
+        await page.goto(`https://www.corona-in-zahlen.de/weltweit/${country}/`);
 
         await page.screenshot( { path: 'DE.png' } );
 
@@ -57,7 +59,7 @@ app.get('/', (req, res) => {
             let update = document.querySelector('span[class="badge badge-secondary"]').innerText;
             let inhabitants = document.querySelectorAll('div[class="card-body"] > p[class="card-title"]')[0].innerText;
             let infections = document.querySelectorAll('div[class="card-body"] > p[class="card-title"]')[4].innerText;
-            let infectionsNew = document.querySelectorAll('div[class="card-body"] > p[class="card-text"] ')[4].innerText.split(' ')[1];
+            //let infectionsNew = document.querySelectorAll('div[class="card-body"] > p[class="card-text"] ')[4].innerText.split(' ')[1];
             let infectionRate = document.querySelectorAll('div[class="card-body"] > p[class="card-title"]')[7].innerText;
             let deaths = document.querySelectorAll('div[class="card-body"] > p[class="card-title"]')[5].innerText;
             let deathsNew = document.querySelectorAll('div[class="card-body"] > p[class="card-text"] ')[6].innerText.split(' ')[1]
@@ -67,7 +69,7 @@ app.get('/', (req, res) => {
                     inhabitants,
                     "infections": {
                         "total": infections,
-                        "new": infectionsNew,
+                        //"new": infectionsNew,
                         "rate": infectionRate
                     },
                     "deaths": {
